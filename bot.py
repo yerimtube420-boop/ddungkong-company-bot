@@ -109,7 +109,7 @@ async def update_role(member, level):
         target_rank = "부회장님"
 
     elif discord.utils.get(member.roles, name="사장님"):
-    target_rank = "사장님"
+        target_rank = "사장님"
 
     else:
         target_rank = get_rank(level)
