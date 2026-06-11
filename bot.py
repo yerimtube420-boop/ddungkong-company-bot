@@ -340,7 +340,7 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         (650, 250),
         f"📅 {month_prefix}",
         fill="black",
-        font=font_small
+        font=font_mid
     )
 
     x = 650
@@ -354,7 +354,7 @@ def create_employee_card(user, xp, level, rank_name, join_date):
             (x, y),
             f"{day:02d}{mark}",
             fill="black",
-            font=font_small
+            font=font_mid
         )
 
         y += 20
