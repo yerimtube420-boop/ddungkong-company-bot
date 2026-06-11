@@ -358,20 +358,7 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         font=font_mid
     )
     
-        mark = "■" if day in attendance_days else "□"
 
-        draw.text(
-            (x, y),
-            f"{day:02d}{mark}",
-            fill="black",
-            font=font_mid
-        )
-
-        y += 20
-
-        if day == 16:
-            x += 100
-            y = 290
     draw.rectangle(
         [(640, 380), (850, 560)],
         outline="black",
