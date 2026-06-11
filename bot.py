@@ -101,6 +101,17 @@ async def update_role(member, level):
 
         if role and role in member.roles:
             await member.remove_roles(role)
+    # 특별 직급 우선
+if member == member.guild.owner:
+    target_rank = "회장님"
+
+elif discord.utils.get(member.roles, name="부회장님"):
+    target_rank = "부회장님"
+
+elif discord.utils.get(member.roles, name="사장님"):
+    target_rank = "사장님"
+
+else:
     target_rank = get_rank(level)
 
 
