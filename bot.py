@@ -388,7 +388,17 @@ async def rank(interaction: discord.Interaction):
 
     xp = get_xp(uid)
     level = get_level(xp)
-    rank_name = get_rank(level)
+    if user == interaction.guild.owner:
+        rank_name = "회장님"
+
+    elif discord.utils.get(user.roles, name="부회장님"):
+        rank_name = "부회장님"
+
+    elif discord.utils.get(user.roles, name="사장님"):
+        rank_name = "사장님"
+
+    else:
+        rank_name = get_rank(level)
 
     cur.execute(
         "SELECT join_date FROM users WHERE user_id=?",
