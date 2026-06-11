@@ -24,7 +24,7 @@ intents.voice_states = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-conn = sqlite3.connect("xp.db")
+conn = sqlite3.connect("/data/xp.db")
 cur = conn.cursor()
 
 cur.execute("""
