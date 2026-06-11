@@ -139,13 +139,18 @@ def create_employee_card(user, xp, level, rank_name, join_date):
     draw = ImageDraw.Draw(card)
 
     try:
-        font_big = ImageFont.truetype("C:/Windows/Fonts/malgun.ttf", 40)
-        font_mid = ImageFont.truetype("C:/Windows/Fonts/malgun.ttf", 24)
-        print("맑은고딕 로드 성공")
-    except Exception as e:
-        print("폰트 오류:", e)
-        font_big = ImageFont.load_default()
-        font_mid = ImageFont.load_default()
+        font_big = ImageFont.truetype(
+        "NotoSansKR-Regular.ttf",
+        40
+    )
+
+        font_mid = ImageFont.truetype(
+        "NotoSansKR-Regular.ttf",
+        24
+    )
+
+        print("NotoSansKR 로딩 성공")
+
 
     draw.rectangle((0, 0, 900, 80), fill=(30, 30, 30))
 
