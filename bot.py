@@ -224,7 +224,7 @@ async def promotion_notice(
 
 def create_employee_card(user, xp, level, rank_name, join_date):
     print("사원증 생성 시작")
-    card = Image.new("RGB", (900, 550), (245, 245, 245))
+    card = Image.new("RGB", (900, 650), (245, 245, 245))
     draw = ImageDraw.Draw(card)
     try:
         font_big = ImageFont.truetype(
@@ -276,7 +276,23 @@ def create_employee_card(user, xp, level, rank_name, join_date):
     )
 
     emp_id = f"EMP-{str(user.id)[-6:]}"
+    cur.execute(
+        """
+        SELECT streak, total_attendance
+        FROM attendance
+        WHERE user_id = ?
+        """,
+        (str(user.id),)
+    )
 
+    row = cur.fetchone()
+
+    if row:
+        streak = row[0]
+        total_attendance = row[1]
+    else:
+        streak = 0
+        total_attendance = 0
     draw.text(
         (260, 120),
         f"이름 : {user.name}",
@@ -290,64 +306,58 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         fill="black",
         font=font_mid
     )
+    if rank_name in ["회장님", "부회장님", "사장님"]:
+        department = "경영진"
+    else:
+        department = "일반 직원"
 
     draw.text(
         (260, 220),
+        f"부서 : {department}",
+        fill="black",
+        font=font_mid
+    )
+    draw.text(
+        (260, 270),
         f"사번 : {emp_id}",
         fill="black",
         font=font_mid
     )
 
     draw.text(
-        (260, 270),
+        (260, 320),
         f"입사일 : {join_date}",
         fill="black",
         font=font_mid
     )
 
     draw.text(
-        (260, 320),
+        (260, 370),
         f"성과등급 : Lv.{level}",
         fill="black",
         font=font_mid
     )
 
     draw.text(
-        (260, 370),
+        (260, 420),
         f"누적성과 : {xp}P",
         fill="black",
         font=font_mid
     )
-
-    month_prefix = datetime.now().strftime("%Y-%m")
-
-    cur.execute(
-        """
-        SELECT date
-        FROM attendance_log
-        WHERE user_id = ?
-        AND date LIKE ?
-        """,
-        (str(user.id), f"{month_prefix}%")
-    )
-
-    attendance_days = {
-        int(row[0][-2:])
-        for row in cur.fetchall()
-    }
-
     draw.text(
-        (650, 250),
-        f"📅 {month_prefix}",
+        (260, 470),
+        f"출석일수 : {total_attendance}일",
         fill="black",
         font=font_mid
     )
 
-    x = 650
-    y = 290
-
-    for day in range(1, 32):
-
+    draw.text(
+        (260, 500),
+        f"연속출석 : {streak}일",
+        fill="black",
+        font=font_mid
+    )
+    
         mark = "■" if day in attendance_days else "□"
 
         draw.text(
@@ -362,7 +372,25 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         if day == 16:
             x += 100
             y = 290
+    draw.rectangle(
+        [(640, 380), (850, 560)],
+        outline="black",
+        width=2
+    )
 
+    draw.text(
+        (680, 420),
+        "뚱콩컴퍼니",
+        fill="black",
+        font=font_mid
+    )
+
+    draw.text(
+        (730, 480),
+        "직인",
+        fill="black",
+        font=font_big
+    )
     output = io.BytesIO()
 
     card.save(
