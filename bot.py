@@ -8,7 +8,7 @@ from discord.ext import commands
 from discord import app_commands
 import sqlite3
 import time
-
+import os
 import io
 import qrcode
 import requests
