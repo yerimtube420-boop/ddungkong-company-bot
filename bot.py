@@ -385,7 +385,7 @@ async def on_ready():
 async def rank(interaction: discord.Interaction):
 
     uid = str(interaction.user.id)
-
+    user = interaction.user
     xp = get_xp(uid)
     level = get_level(xp)
     if user == interaction.guild.owner:
