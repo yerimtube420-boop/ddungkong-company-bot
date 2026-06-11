@@ -44,6 +44,13 @@ CREATE TABLE IF NOT EXISTS attendance(
 )
 """)
 
+cur.execute("""
+CREATE TABLE IF NOT EXISTS attendance_log(
+    user_id TEXT,
+    date TEXT,
+    PRIMARY KEY(user_id, date)
+)
+""")
 conn.commit()
 
 def ensure_user(uid):
@@ -346,7 +353,18 @@ async def on_message(message):
         return
 
     cooldown[uid] = now
+    
+    today = datetime.now().strftime("%Y-%m-%d")
 
+    cur.execute(
+        """
+        INSERT OR IGNORE INTO attendance_log
+        VALUES (?, ?)
+        """,
+        (uid, today)
+    )
+
+    conn.commit()
     old_xp = get_xp(uid)
 
     add_xp(uid, 2)
