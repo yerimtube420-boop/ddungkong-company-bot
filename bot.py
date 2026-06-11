@@ -319,13 +319,49 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         font=font_mid
     )
 
-    qr = qrcode.make(emp_id)
-    qr = qr.resize((180, 180))
+    month_prefix = datetime.now().strftime("%Y-%m")
 
-    card.paste(
-        qr,
-        (680, 300)
+    cur.execute(
+        """
+        SELECT date
+        FROM attendance_log
+        WHERE user_id = ?
+        AND date LIKE ?
+        """,
+        (str(user.id), f"{month_prefix}%")
     )
+
+    attendance_days = {
+        int(row[0][-2:])
+        for row in cur.fetchall()
+    }
+
+    draw.text(
+        (650, 250),
+        f"📅 {month_prefix}",
+        fill="black",
+        font=font_small
+    )
+
+    x = 650
+    y = 290
+
+    for day in range(1, 32):
+
+        mark = "■" if day in attendance_days else "□"
+
+        draw.text(
+            (x, y),
+            f"{day:02d}{mark}",
+            fill="black",
+            font=font_small
+        )
+
+        y += 20
+
+        if day == 16:
+            x += 100
+            y = 290
 
     output = io.BytesIO()
 
