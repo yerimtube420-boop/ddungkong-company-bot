@@ -544,7 +544,8 @@ async def setlevel(
         str(member.id),
         xp
     )
-
+    await update_role(member, level)
+    
     await interaction.response.send_message(
         f"{member.mention} 레벨 {level} 설정 완료"
     )
