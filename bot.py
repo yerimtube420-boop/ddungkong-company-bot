@@ -478,4 +478,6 @@ async def setlevel(
         f"{member.mention} 레벨 {level} 설정 완료"
     )
 # 토큰 입력
-bot.run("TOKEN")
+import os
+
+bot.run(os.getenv("TOKEN"))
