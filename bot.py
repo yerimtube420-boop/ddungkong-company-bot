@@ -92,7 +92,15 @@ async def update_role(member, level):
         "차장",
         "부장"
     ]
+    # 기존 직급 제거
+    for role_name in role_names:
+        role = discord.utils.get(
+            member.guild.roles,
+            name=role_name
+        )
 
+        if role and role in member.roles:
+            await member.remove_roles(role)
     target_rank = get_rank(level)
 
     for role_name in role_names:
