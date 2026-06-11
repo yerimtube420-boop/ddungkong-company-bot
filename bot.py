@@ -34,6 +34,16 @@ CREATE TABLE IF NOT EXISTS users(
     join_date INTEGER DEFAULT 0
 )
 """)
+
+cur.execute("""
+CREATE TABLE IF NOT EXISTS attendance(
+    user_id TEXT PRIMARY KEY,
+    last_attendance TEXT,
+    streak INTEGER DEFAULT 0,
+    total_attendance INTEGER DEFAULT 0
+)
+""")
+
 conn.commit()
 
 def ensure_user(uid):
@@ -105,6 +115,68 @@ async def update_role(member, level):
 
     return target_rank
 
+from datetime import datetime
+
+def attend(user_id):
+
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    cur.execute("""
+    SELECT last_attendance,
+           streak,
+           total_attendance
+    FROM attendance
+    WHERE user_id=?
+    """, (user_id,))
+
+    row = cur.fetchone()
+
+    if row:
+
+        last_date, streak, total = row
+
+        if last_date == today:
+            return False, streak
+
+        streak += 1
+        total += 1
+
+        cur.execute("""
+        UPDATE attendance
+        SET last_attendance=?,
+            streak=?,
+            total_attendance=?
+        WHERE user_id=?
+        """, (
+            today,
+            streak,
+            total,
+            user_id
+        ))
+
+    else:
+
+        streak = 1
+        total = 1
+
+        cur.execute("""
+        INSERT INTO attendance(
+            user_id,
+            last_attendance,
+            streak,
+            total_attendance
+        )
+        VALUES (?, ?, ?, ?)
+        """, (
+            user_id,
+            today,
+            streak,
+            total
+        ))
+
+    conn.commit()
+
+    return True, streak
 
 async def promotion_notice(
     channel,
@@ -477,7 +549,35 @@ async def setlevel(
     await interaction.response.send_message(
         f"{member.mention} 레벨 {level} 설정 완료"
     )
-# 토큰 입력
-import os
 
+@bot.tree.command(
+    name="출근",
+    description="오늘의 출근"
+)
+async def attendance(
+    interaction: discord.Interaction
+):
+
+    uid = str(interaction.user.id)
+
+    success, streak = attend(uid)
+
+    if not success:
+        return await interaction.response.send_message(
+            "오늘은 이미 출근했습니다."
+        )
+
+    add_xp(uid, 50)
+
+    print("출근 XP 지급 완료")
+    print("현재 XP:", get_xp(uid))
+
+    await interaction.response.send_message(
+        f"""🏢 출근 완료!
+
++50P 지급
+
+연속 출근 : {streak}일"""
+    )
+# 토큰 입력   
 bot.run(os.getenv("TOKEN"))
