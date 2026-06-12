@@ -373,10 +373,25 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         fill="black",
         font=font_mid
     )
+    display_level = level
 
+    if rank_name == "대리" and display_level < 10:
+        display_level = 10
+
+    elif rank_name == "팀장" and display_level < 20:
+        display_level = 20
+
+    elif rank_name == "과장" and display_level < 40:
+        display_level = 40
+
+    elif rank_name == "차장" and display_level < 60:
+        display_level = 60
+
+    elif rank_name == "부장" and display_level < 80:
+        display_level = 80
     draw.text(
         (260, 370),
-        f"성과등급 : Lv.{level}",
+        f"성과등급 : Lv.{display_level}",
         fill="black",
         font=font_mid
     )
