@@ -707,17 +707,17 @@ class InvestView(discord.ui.View):
         self.bet = bet
         self.uid = uid
 
-async def process_result(
-    self,
-    interaction: discord.Interaction,
-    location_name: str
-):
-    today = datetime.now().strftime("%Y-%m-%d")
+    async def process_result(
+        self,
+        interaction: discord.Interaction,
+        location_name: str
+    ):
+        today = datetime.now().strftime("%Y-%m-%d")
 
-    cur.execute(
-        "SELECT invest_date, invest_count FROM investment WHERE user_id=?",
-        (self.uid,)
-)
+        cur.execute(
+            "SELECT invest_date, invest_count FROM investment WHERE user_id=?",
+            (self.uid,)
+        )
 
     row = cur.fetchone()
 
