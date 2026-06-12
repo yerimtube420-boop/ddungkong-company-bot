@@ -746,21 +746,21 @@ class InvestView(discord.ui.View):
 
     result = results[0]
 
-        if result == "투자성공":
+    if result == "투자성공":
 
-            set_xp(self.uid, xp + self.bet)
+        set_xp(self.uid, xp + self.bet)
 
-            msg = f"📈 투자성공 !\n+{self.bet}P"
+        msg = f"📈 투자성공 !\n+{self.bet}P"
 
-        elif result == "투자철회":
+    elif result == "투자철회":
 
-            msg = "📋 투자철회\n포인트 변동 없음"
+        msg = "📋 투자철회\n포인트 변동 없음"
 
-        else:
+    else:
 
-            set_xp(self.uid, xp - self.bet)
+        set_xp(self.uid, xp - self.bet)
 
-            msg = f"📉 투자실패 !\n-{self.bet}P"
+        msg = f"📉 투자실패 !\n-{self.bet}P"
     cur.execute(
         """
         INSERT OR REPLACE INTO investment
