@@ -223,6 +223,7 @@ async def promotion_notice(
     await channel.send(embed=embed)
 
 def create_employee_card(user, xp, level, rank_name, join_date):
+    next_level, next_rank = get_next_rank_level(level)
     print("사원증 생성 시작")
     card = Image.new("RGB", (900, 650), (245, 245, 245))
     draw = ImageDraw.Draw(card)
@@ -367,6 +368,20 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         fill="black",
         font=font_mid
     )
+    if next_level:
+    draw.text(
+        (260, 550),
+        f"다음 진급 : {next_rank} ({next_level - level}Lv)",
+        fill="black",
+        font=font_mid
+    )
+    else:
+        draw.text(
+            (260, 550),
+            "최고 직급",
+            fill=(184, 134, 11),
+            font=font_mid
+        )
     draw.rectangle(
     [(670, 390), (820, 520)],
     outline=(180, 180, 180),
