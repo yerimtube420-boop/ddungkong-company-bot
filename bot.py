@@ -374,13 +374,8 @@ def create_employee_card(user, xp, level, rank_name, join_date):
 
     stamp = Image.open("stamp.png").convert("RGBA")
 
-    stamp = stamp.resize((200, 200))
+    stamp = stamp.resize((140, 140))
 
-    card.paste(
-        stamp,
-        (640, 350),
-        stamp
-    )
 
     draw.text(
         (750, 455),
@@ -395,7 +390,7 @@ def create_employee_card(user, xp, level, rank_name, join_date):
 
     card.paste(
         stamp,
-        (675, 365),
+        (690, 390),
         stamp
     )
     output = io.BytesIO()
