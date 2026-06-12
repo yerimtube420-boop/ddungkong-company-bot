@@ -176,7 +176,8 @@ def attend(user_id):
     """, (user_id,))
 
     row = cur.fetchone()
-
+    print("uid =", uid)
+    print("row =", row)
     if row:
 
         last_date, streak, total = row
@@ -474,7 +475,6 @@ async def on_message(message):
         """,
         (uid, today)
     )
-
     conn.commit()
     old_xp = get_xp(uid)
 
@@ -695,7 +695,16 @@ async def setlevel(
         xp
     )
     await update_role(member, level)
-    
+cur.execute(
+    """
+    INSERT OR REPLACE INTO investment
+    (user_id, invest_date, invest_count)
+    VALUES (?, ?, ?)
+    """,
+    (self.uid, today, invest_count)
+)
+
+conn.commit()
     await interaction.response.send_message(
         f"{member.mention} 레벨 {level} 설정 완료"
     )
@@ -712,34 +721,61 @@ class InvestView(discord.ui.View):
         interaction: discord.Interaction,
         location_name: str
     ):
+        today = datetime.now().strftime("%Y-%m-%d")
 
+        cur.execute(
+            "SELECT invest_date, invest_count FROM investment WHERE user_id=?",
+            (self.uid,)
+    )
+
+    row = cur.fetchone()
+
+    if row:
+        invest_date, invest_count = row
+
+        if invest_date == today:
+
+            if invest_count >= 5:
+                return await interaction.response.send_message(
+                    "오늘 투자 가능 횟수(5회)를 모두 사용했습니다.",
+                    ephemeral=True
+                )
+
+            invest_count += 1
+
+        else:
+            invest_count = 1
+
+    else:
+        invest_count = 1
         xp = get_xp(self.uid)
 
-        results = ["성과급", "현상유지", "적자"]
+        results = ["투자성공", "투자철회", "투자실패"]
         random.shuffle(results)
 
         result = results[0]
 
-        if result == "성과급":
+        if result == "투자성공":
 
             set_xp(self.uid, xp + self.bet)
 
-            msg = f"📈 성과급 발생!\n+{self.bet}P"
+            msg = f"📈 투자성공 !\n+{self.bet}P"
 
-        elif result == "현상유지":
+        elif result == "투자철회":
 
-            msg = "📋 현상유지\n포인트 변동 없음"
+            msg = "📋 투자철회\n포인트 변동 없음"
 
         else:
 
             set_xp(self.uid, xp - self.bet)
 
-            msg = f"📉 적자 발생!\n-{self.bet}P"
+            msg = f"📉 투자실패 !\n-{self.bet}P"
 
         await interaction.response.edit_message(
             content=
             f"🏢 투자 결과\n\n"
-            f"{msg}",
+            f"{msg}\n\n"
+            f"오늘 사용 : {invest_count}/5",
             view=None
         )
 
