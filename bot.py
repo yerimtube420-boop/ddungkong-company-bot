@@ -256,7 +256,7 @@ def create_employee_card(user, xp, level, rank_name, join_date):
     )
     draw.text(
         (55, 320),
-        "CORPORATE ID CARD",
+        "사내 성과 카드",
         fill="black",
         font=font_mid
     )
