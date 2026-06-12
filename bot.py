@@ -705,9 +705,9 @@ cur.execute(
 )
 
 conn.commit()
-    await interaction.response.send_message(
-        f"{member.mention} 레벨 {level} 설정 완료"
-    )
+await interaction.response.send_message(
+    f"{member.mention} 레벨 {level} 설정 완료"
+)
 class InvestView(discord.ui.View):
 
     def __init__(self, bet, uid):
