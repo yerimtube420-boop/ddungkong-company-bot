@@ -390,7 +390,7 @@ def create_employee_card(user, xp, level, rank_name, join_date):
 
     card.paste(
         stamp,
-        (650, 395),
+        (650, 370),
         stamp
     )
     output = io.BytesIO()
