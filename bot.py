@@ -727,10 +727,10 @@ class InvestView(discord.ui.View):
         if invest_date == today:
 
             if invest_count >= 5:
-                return await interaction.response.send_message(
-                    "오늘 투자 가능 횟수(5회)를 모두 사용했습니다.",
-                    ephemeral=True
-                )
+            return await interaction.response.send_message(
+                "오늘 투자 가능 횟수(5회)를 모두 사용했습니다.",
+                ephemeral=True
+            )
 
             invest_count += 1
 
