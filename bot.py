@@ -716,7 +716,7 @@ async def invest(
             ephemeral=True
         )
 
-    if bet > 50:
+    if bet > 100:
         return await interaction.response.send_message(
             "최대 투자금은 100P입니다.",
             ephemeral=True
