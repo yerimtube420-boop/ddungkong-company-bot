@@ -51,6 +51,14 @@ CREATE TABLE IF NOT EXISTS attendance_log(
     PRIMARY KEY(user_id, date)
 )
 """)
+
+cur.execute("""
+CREATE TABLE IF NOT EXISTS investment(
+    user_id TEXT PRIMARY KEY,
+    invest_date TEXT,
+    invest_count INTEGER DEFAULT 0
+)
+""")
 conn.commit()
 
 def ensure_user(uid):
