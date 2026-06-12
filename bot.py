@@ -719,66 +719,66 @@ class InvestView(discord.ui.View):
             (self.uid,)
         )
 
-    row = cur.fetchone()
+        row = cur.fetchone()
 
-    if row:
-        invest_date, invest_count = row
+        if row:
+            invest_date, invest_count = row
 
-        if invest_date == today:
+            if invest_date == today:
 
-            if invest_count >= 5:
-                return await interaction.response.send_message(
-                    "오늘 투자 가능 횟수(5회)를 모두 사용했습니다.",
-                    ephemeral=True
-                )
+                if invest_count >= 5:
+                    return await interaction.response.send_message(
+                        "오늘 투자 가능 횟수(5회)를 모두 사용했습니다.",
+                        ephemeral=True
+                    )
 
-            invest_count += 1
+                invest_count += 1
+
+            else:
+                invest_count = 1
 
         else:
             invest_count = 1
+        xp = get_xp(self.uid)
 
-    else:
-        invest_count = 1
-    xp = get_xp(self.uid)
+        results = ["투자성공", "투자철회", "투자실패"]
+        random.shuffle(results)
 
-    results = ["투자성공", "투자철회", "투자실패"]
-    random.shuffle(results)
+        result = results[0]
 
-    result = results[0]
+        if result == "투자성공":
 
-    if result == "투자성공":
+            set_xp(self.uid, xp + self.bet)
 
-        set_xp(self.uid, xp + self.bet)
+            msg = f"📈 투자성공 !\n+{self.bet}P"
 
-        msg = f"📈 투자성공 !\n+{self.bet}P"
+        elif result == "투자철회":
 
-    elif result == "투자철회":
+            msg = "📋 투자철회\n포인트 변동 없음"
 
-        msg = "📋 투자철회\n포인트 변동 없음"
+        else:
 
-    else:
+            set_xp(self.uid, xp - self.bet)
 
-        set_xp(self.uid, xp - self.bet)
-
-        msg = f"📉 투자실패 !\n-{self.bet}P"
+            msg = f"📉 투자실패 !\n-{self.bet}P"
         
-    cur.execute(
-        """
-        INSERT OR REPLACE INTO investment
-        (user_id, invest_date, invest_count)
-        VALUES (?, ?, ?)
-        """,
-        (self.uid, today, invest_count)
-    )
+        cur.execute(
+            """
+            INSERT OR REPLACE INTO investment
+            (user_id, invest_date, invest_count)
+            VALUES (?, ?, ?)
+            """,
+            (self.uid, today, invest_count)
+        )
 
-    conn.commit()
-    await interaction.response.edit_message(
-        content=
-        f"🏢 투자 결과\n\n"
-        f"{msg}\n\n"
-        f"오늘 사용 : {invest_count}/5",
-        view=None
-    )
+        conn.commit()
+        await interaction.response.edit_message(
+            content=
+            f"🏢 투자 결과\n\n"
+            f"{msg}\n\n"
+            f"오늘 사용 : {invest_count}/5",
+            view=None
+        )
 
     @discord.ui.button(
         emoji="🏢",
