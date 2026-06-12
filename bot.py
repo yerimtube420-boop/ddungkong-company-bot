@@ -12,6 +12,7 @@ import os
 import io
 import qrcode
 import requests
+import random
 
 from PIL import Image
 from PIL import ImageDraw
@@ -697,6 +698,106 @@ async def setlevel(
     
     await interaction.response.send_message(
         f"{member.mention} 레벨 {level} 설정 완료"
+    )
+@bot.tree.command(
+    name="투자",
+    description="성과 포인트 투자"
+)
+async def invest(
+    interaction: discord.Interaction,
+    bet: int
+):
+
+    uid = str(interaction.user.id)
+
+    if bet < 10:
+        return await interaction.response.send_message(
+            "최소 투자금은 10P입니다.",
+            ephemeral=True
+        )
+
+    if bet > 50:
+        return await interaction.response.send_message(
+            "최대 투자금은 100P입니다.",
+            ephemeral=True
+        )
+
+    xp = get_xp(uid)
+
+    if xp < bet:
+        return await interaction.response.send_message(
+            "투자금이 부족합니다.",
+            ephemeral=True
+        )
+
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    cur.execute(
+        "SELECT invest_date, invest_count FROM investment WHERE user_id=?",
+        (uid,)
+    )
+
+    row = cur.fetchone()
+
+    if row:
+
+        invest_date, invest_count = row
+
+        if invest_date == today:
+
+            if invest_count >= 5:
+                return await interaction.response.send_message(
+                    "오늘 투자 가능 횟수(5회)를 모두 사용했습니다.",
+                    ephemeral=True
+                )
+
+            invest_count += 1
+
+        else:
+
+            invest_count = 1
+
+    else:
+
+        invest_count = 1
+
+    result = random.choices(
+        ["투자성공", "투자철회", "투자실패"],
+        weights=[30, 40, 30]
+    )[0]
+
+    if result == "투자성공":
+
+        set_xp(uid, xp + bet)
+
+        msg = f"📈 투자성공 !\n+{bet}P"
+
+    elif result == "투자철회":
+
+        msg = "📋 투자철회\n포인트 변동 없음"
+
+    else:
+
+        set_xp(uid, xp - bet)
+
+        msg = f"📉 투자실패 !\n-{bet}P"
+
+    cur.execute(
+        """
+        INSERT OR REPLACE INTO investment
+        (user_id, invest_date, invest_count)
+        VALUES (?, ?, ?)
+        """,
+        (uid, today, invest_count)
+    )
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"🏢 투자 결과\n\n"
+        f"투자금 : {bet}P\n\n"
+        f"{msg}\n\n"
+        f"오늘 사용 : {invest_count}/5"
     )
 
 @bot.tree.command(
