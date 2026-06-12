@@ -367,7 +367,7 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         font=font_mid
     )
     draw.rectangle(
-    [(620, 340), (860, 580)],
+    [(650, 380), (840, 540)],
     outline=(180, 180, 180),
     width=2
     )
@@ -383,9 +383,9 @@ def create_employee_card(user, xp, level, rank_name, join_date):
     )
 
     draw.text(
-        (700, 540),
+        (750, 455),
         "공식 직인",
-        fill=(170, 170, 170),
+        fill=(160, 160, 160),
         font=font_mid
     )
 
@@ -395,7 +395,7 @@ def create_employee_card(user, xp, level, rank_name, join_date):
 
     card.paste(
         stamp,
-        (640, 350),
+        (675, 365),
         stamp
     )
     output = io.BytesIO()
