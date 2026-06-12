@@ -699,6 +699,82 @@ async def setlevel(
     await interaction.response.send_message(
         f"{member.mention} 레벨 {level} 설정 완료"
     )
+class InvestView(discord.ui.View):
+
+    def __init__(self, bet, uid):
+        super().__init__(timeout=60)
+
+        self.bet = bet
+        self.uid = uid
+
+    async def process_result(
+        self,
+        interaction: discord.Interaction,
+        location_name: str
+    ):
+
+        xp = get_xp(self.uid)
+
+        results = ["성과급", "현상유지", "적자"]
+        random.shuffle(results)
+
+        result = results[0]
+
+        if result == "성과급":
+
+            set_xp(self.uid, xp + self.bet)
+
+            msg = f"📈 성과급 발생!\n+{self.bet}P"
+
+        elif result == "현상유지":
+
+            msg = "📋 현상유지\n포인트 변동 없음"
+
+        else:
+
+            set_xp(self.uid, xp - self.bet)
+
+            msg = f"📉 적자 발생!\n-{self.bet}P"
+
+        await interaction.response.edit_message(
+            content=
+            f"🏢 투자 결과\n\n"
+            f"{msg}",
+            view=None
+        )
+
+    @discord.ui.button(
+        emoji="🏢",
+        style=discord.ButtonStyle.primary
+    )
+    async def hq(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button
+    ):
+        await self.process_result(interaction, "🏢")
+
+    @discord.ui.button(
+        emoji="🏚️",
+        style=discord.ButtonStyle.success
+    )
+    async def lab(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button
+    ):
+        await self.process_result(interaction, "🏚️")
+
+    @discord.ui.button(
+        emoji="🏭",
+        style=discord.ButtonStyle.danger
+    )
+    async def factory(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button
+    ):
+        await self.process_result(interaction, "🏭")
 @bot.tree.command(
     name="투자",
     description="성과 포인트 투자"
@@ -726,78 +802,14 @@ async def invest(
 
     if xp < bet:
         return await interaction.response.send_message(
-            "투자금이 부족합니다.",
+            "포인트가 부족합니다.",
             ephemeral=True
         )
 
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    cur.execute(
-        "SELECT invest_date, invest_count FROM investment WHERE user_id=?",
-        (uid,)
-    )
-
-    row = cur.fetchone()
-
-    if row:
-
-        invest_date, invest_count = row
-
-        if invest_date == today:
-
-            if invest_count >= 5:
-                return await interaction.response.send_message(
-                    "오늘 투자 가능 횟수(5회)를 모두 사용했습니다.",
-                    ephemeral=True
-                )
-
-            invest_count += 1
-
-        else:
-
-            invest_count = 1
-
-    else:
-
-        invest_count = 1
-
-    result = random.choices(
-        ["투자성공", "투자철회", "투자실패"],
-        weights=[30, 40, 30]
-    )[0]
-
-    if result == "투자성공":
-
-        set_xp(uid, xp + bet)
-
-        msg = f"📈 투자성공 !\n+{bet}P"
-
-    elif result == "투자철회":
-
-        msg = "📋 투자철회\n포인트 변동 없음"
-
-    else:
-
-        set_xp(uid, xp - bet)
-
-        msg = f"📉 투자실패 !\n-{bet}P"
-
-    cur.execute(
-        """
-        INSERT OR REPLACE INTO investment
-        (user_id, invest_date, invest_count)
-        VALUES (?, ?, ?)
-        """,
-        (uid, today, invest_count)
-    )
-
-    conn.commit()
-
     await interaction.response.send_message(
-        f"🏢 투자 결과\n\n"
-        f"투자금 : {bet}P\n\n"
-        f"{msg}\n\n"
-        f"오늘 사용 : {invest_count}/5"
+        f"🏢 투자금 : {bet}P\n\n"
+        f"투자 부서를 선택하세요.",
+        view=InvestView(bet, uid)
     )
 
 @bot.tree.command(
