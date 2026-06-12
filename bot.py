@@ -249,14 +249,14 @@ def create_employee_card(user, xp, level, rank_name, join_date):
     draw.rectangle((0, 0, 900, 80), fill=(30, 30, 30))
 
     draw.text(
-        (20, 15),
+        (20, 10),
         "뚱콩컴퍼니",
         fill="white",
         font=font_big
     )
     draw.text(
-        (25, 55),
-        "EMPLOYEE IDENTIFICATION CARD",
+        (25, 65),
+        "CORPORATE ID CARD",
         fill=(220, 220, 220),
         font=font_mid
     )
