@@ -525,7 +525,23 @@ async def rank(interaction: discord.Interaction):
 
     elif discord.utils.get(user.roles, name="사장님"):
         rank_name = "사장님"
+        
+    elif discord.utils.get(user.roles, name="부장"):
+        rank_name = "부장"
 
+    elif discord.utils.get(user.roles, name="차장"):
+        rank_name = "차장"
+
+    elif discord.utils.get(user.roles, name="과장"):
+        rank_name = "과장"
+
+    elif discord.utils.get(user.roles, name="팀장"):
+        rank_name = "팀장"
+
+    elif discord.utils.get(user.roles, name="대리"):
+        rank_name = "대리"
+    
+    
     else:
         rank_name = get_rank(level)
 
