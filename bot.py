@@ -255,7 +255,7 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         font=font_big
     )
     draw.text(
-        (25, 95),
+        (25, 110),
         "CORPORATE ID CARD",
         fill="black",
         font=font_mid
@@ -373,10 +373,10 @@ def create_employee_card(user, xp, level, rank_name, join_date):
     )
 
     draw.text(
-        (710, 490),
+        (710, 500),
         "직인",
         fill="black",
-        font=font_big
+        font=font_mid
     )
     output = io.BytesIO()
 
