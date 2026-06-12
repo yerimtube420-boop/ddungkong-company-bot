@@ -302,17 +302,17 @@ def create_employee_card(user, xp, level, rank_name, join_date):
     display_rank = rank_name
 
     if rank_name == "회장님":
-        display_rank = "회장님 👑"
+        rank_color = (184, 134, 11)
 
     elif rank_name == "부회장님":
-        display_rank = "부회장님 ⭐"
+        rank_color = (120, 120, 120)
 
     elif rank_name == "사장님":
-        display_rank = "사장님 💼"
+        rank_color = (139, 69, 19)
     draw.text(
         (260, 170),
         f"직급 : {display_rank}",
-        fill="black",
+        fill=rank_color,
         font=font_mid
     )
     if rank_name in ["회장님", "부회장님", "사장님"]:
