@@ -369,12 +369,12 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         font=font_mid
     )
     if next_level:
-    draw.text(
-        (260, 550),
-        f"다음 진급 : {next_rank} ({next_level - level}Lv)",
-        fill="black",
-        font=font_mid
-    )
+        draw.text(
+            (260, 550),
+            f"다음 진급 : {next_rank} ({next_level - level}Lv)",
+            fill="black",
+            font=font_mid
+        )
     else:
         draw.text(
             (260, 550),
