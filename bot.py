@@ -739,10 +739,10 @@ class InvestView(discord.ui.View):
 
     else:
         invest_count = 1
-        xp = get_xp(self.uid)
+    xp = get_xp(self.uid)
 
-        results = ["투자성공", "투자철회", "투자실패"]
-        random.shuffle(results)
+    results = ["투자성공", "투자철회", "투자실패"]
+    random.shuffle(results)
 
         result = results[0]
 
@@ -761,17 +761,17 @@ class InvestView(discord.ui.View):
             set_xp(self.uid, xp - self.bet)
 
             msg = f"📉 투자실패 !\n-{self.bet}P"
-        cur.execute(
-            """
-            INSERT OR REPLACE INTO investment
-            (user_id, invest_date, invest_count)
-            VALUES (?, ?, ?)
-            """,
-            (self.uid, today, invest_count)
-        )
+    cur.execute(
+        """
+        INSERT OR REPLACE INTO investment
+        (user_id, invest_date, invest_count)
+        VALUES (?, ?, ?)
+        """,
+        (self.uid, today, invest_count)
+    )
 
-        conn.commit()
-        await interaction.response.edit_message(
+    conn.commit()
+    await interaction.response.edit_message(
             content=
             f"🏢 투자 결과\n\n"
             f"{msg}\n\n"
