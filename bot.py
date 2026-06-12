@@ -761,6 +761,7 @@ class InvestView(discord.ui.View):
         set_xp(self.uid, xp - self.bet)
 
         msg = f"📉 투자실패 !\n-{self.bet}P"
+        
     cur.execute(
         """
         INSERT OR REPLACE INTO investment
@@ -772,12 +773,12 @@ class InvestView(discord.ui.View):
 
     conn.commit()
     await interaction.response.edit_message(
-            content=
-            f"🏢 투자 결과\n\n"
-            f"{msg}\n\n"
-            f"오늘 사용 : {invest_count}/5",
-            view=None
-        )
+        content=
+        f"🏢 투자 결과\n\n"
+        f"{msg}\n\n"
+        f"오늘 사용 : {invest_count}/5",
+        view=None
+    )
 
     @discord.ui.button(
         emoji="🏢",
