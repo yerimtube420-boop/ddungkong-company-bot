@@ -366,7 +366,28 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         fill="black",
         font=font_mid
     )
-    
+    draw.rectangle(
+    [(620, 340), (860, 580)],
+    outline=(180, 180, 180),
+    width=2
+    )
+
+    stamp = Image.open("stamp.png").convert("RGBA")
+
+    stamp = stamp.resize((200, 200))
+
+    card.paste(
+        stamp,
+        (640, 350),
+        stamp
+    )
+
+    draw.text(
+        (700, 540),
+        "공식 직인",
+        fill=(170, 170, 170),
+        font=font_mid
+    )
 
     stamp = Image.open("stamp.png").convert("RGBA")
 
