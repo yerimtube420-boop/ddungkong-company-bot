@@ -695,19 +695,10 @@ async def setlevel(
         xp
     )
     await update_role(member, level)
-cur.execute(
-    """
-    INSERT OR REPLACE INTO investment
-    (user_id, invest_date, invest_count)
-    VALUES (?, ?, ?)
-    """,
-    (self.uid, today, invest_count)
-)
 
-conn.commit()
-await interaction.response.send_message(
-    f"{member.mention} 레벨 {level} 설정 완료"
-)
+    await interaction.response.send_message(
+        f"{member.mention} 레벨 {level} 설정 완료"
+    )
 class InvestView(discord.ui.View):
 
     def __init__(self, bet, uid):
@@ -770,7 +761,16 @@ class InvestView(discord.ui.View):
             set_xp(self.uid, xp - self.bet)
 
             msg = f"📉 투자실패 !\n-{self.bet}P"
+        cur.execute(
+            """
+            INSERT OR REPLACE INTO investment
+            (user_id, invest_date, invest_count)
+            VALUES (?, ?, ?)
+            """,
+            (self.uid, today, invest_count)
+        )
 
+        conn.commit()
         await interaction.response.edit_message(
             content=
             f"🏢 투자 결과\n\n"
