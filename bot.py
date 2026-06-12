@@ -176,7 +176,7 @@ def attend(user_id):
     """, (user_id,))
 
     row = cur.fetchone()
-    print("uid =", uid)
+    print("uid =", user_id)
     print("row =", row)
     if row:
 
