@@ -311,7 +311,7 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         display_rank = "사장님 💼"
     draw.text(
         (260, 170),
-        f"직급 : {display_name}",
+        f"직급 : {display_rank}",
         fill="black",
         font=font_mid
     )
