@@ -300,7 +300,8 @@ def create_employee_card(user, xp, level, rank_name, join_date):
         font=font_mid
     )
     display_rank = rank_name
-
+    rank_color = "black"
+    
     if rank_name == "회장님":
         rank_color = (184, 134, 11)
 
