@@ -368,24 +368,14 @@ def create_employee_card(user, xp, level, rank_name, join_date):
     )
     
 
-    draw.rectangle(
-        [(640, 380), (850, 560)],
-        outline="black",
-        width=2
-    )
+    stamp = Image.open("stamp.png").convert("RGBA")
 
-    draw.text(
-        (680, 420),
-        "뚱콩컴퍼니",
-        fill="black",
-        font=font_mid
-    )
+    stamp = stamp.resize((200, 200))
 
-    draw.text(
-        (710, 500),
-        "직인",
-        fill="black",
-        font=font_mid
+    card.paste(
+        stamp,
+        (640, 350),
+        stamp
     )
     output = io.BytesIO()
 
