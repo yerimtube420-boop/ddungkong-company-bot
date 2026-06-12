@@ -97,26 +97,28 @@ def get_rank(level):
     if level >= 10: return "대리"
     if level >= 3: return "사원"
     return "인턴" 
-def get_next_rank_level(level):
-    if level < 3:
+def get_next_rank_level(rank_name):
+
+    if rank_name == "인턴":
         return 3, "사원"
 
-    elif level < 10:
+    elif rank_name == "사원":
         return 10, "대리"
 
-    elif level < 20:
+    elif rank_name == "대리":
         return 20, "팀장"
 
-    elif level < 40:
+    elif rank_name == "팀장":
         return 40, "과장"
 
-    elif level < 60:
+    elif rank_name == "과장":
         return 60, "차장"
 
-    elif level < 80:
+    elif rank_name == "차장":
         return 80, "부장"
 
-    return None, None
+    else:
+        return None, None
 async def update_role(member, level):
 
     role_names = [
@@ -253,7 +255,7 @@ async def promotion_notice(
     await channel.send(embed=embed)
 
 def create_employee_card(user, xp, level, rank_name, join_date):
-    next_level, next_rank = get_next_rank_level(level)
+    next_level, next_rank = get_next_rank_level(rank_name)
     print("사원증 생성 시작")
     card = Image.new("RGB", (900, 650), (245, 245, 245))
     draw = ImageDraw.Draw(card)
