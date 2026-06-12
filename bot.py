@@ -744,7 +744,7 @@ class InvestView(discord.ui.View):
     results = ["투자성공", "투자철회", "투자실패"]
     random.shuffle(results)
 
-        result = results[0]
+    result = results[0]
 
         if result == "투자성공":
 
