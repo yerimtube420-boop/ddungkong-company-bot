@@ -6,6 +6,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from zoneinfo import ZoneInfo
 import sqlite3
 import time
 import os
@@ -167,7 +168,9 @@ from datetime import datetime
 
 def attend(user_id):
 
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now(
+        ZoneInfo("Asia/Seoul")
+    ).strftime("%Y-%m-%d")
 
     cur.execute("""
     SELECT last_attendance,
@@ -483,7 +486,9 @@ async def on_message(message):
 
     cooldown[uid] = now
     
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now(
+        ZoneInfo("Asia/Seoul")
+    ).strftime("%Y-%m-%d")
 
     cur.execute(
         """
@@ -745,7 +750,9 @@ class InvestView(discord.ui.View):
         interaction: discord.Interaction,
         location_name: str
     ):
-        today = datetime.now().strftime("%Y-%m-%d")
+        today = datetime.now(
+            ZoneInfo("Asia/Seoul")
+        ).strftime("%Y-%m-%d")
 
         cur.execute(
             "SELECT invest_date, invest_count FROM investment WHERE user_id=?",
