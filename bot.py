@@ -947,7 +947,7 @@ async def attendance_stats(
         msg += f"<@{uid}> - {cnt}회\n"
 
     await interaction.response.send_message(msg)
-    @bot.tree.command(
+@bot.tree.command(
     name="출석미달",
     description="이번 달 출석 7회 미만"
 )
