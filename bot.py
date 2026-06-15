@@ -955,7 +955,7 @@ async def attendance_fail(
     interaction: discord.Interaction
 ):
 
-    month = datetime.now().strftime("%Y-%m")
+   month = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m")
 
     cur.execute(
         """
