@@ -918,7 +918,7 @@ async def attendance(
 
 연속 출근 : {streak}일"""
     )
- @bot.tree.command(
+@bot.tree.command(
     name="출석통계",
     description="이번 달 출석 통계"
 )
