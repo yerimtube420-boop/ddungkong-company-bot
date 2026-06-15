@@ -918,5 +918,69 @@ async def attendance(
 
 연속 출근 : {streak}일"""
     )
+ @bot.tree.command(
+    name="출석통계",
+    description="이번 달 출석 통계"
+)
+async def attendance_stats(
+    interaction: discord.Interaction
+):
+
+    month = datetime.now().strftime("%Y-%m")
+
+    cur.execute(
+        """
+        SELECT user_id, COUNT(*) as cnt
+        FROM attendance_log
+        WHERE date LIKE ?
+        GROUP BY user_id
+        ORDER BY cnt DESC
+        """,
+        (f"{month}%",)
+    )
+
+    rows = cur.fetchall()
+
+    msg = f"📅 {month} 출석 통계\n\n"
+
+    for uid, cnt in rows:
+        msg += f"<@{uid}> - {cnt}회\n"
+
+    await interaction.response.send_message(msg)
+    @bot.tree.command(
+    name="출석미달",
+    description="이번 달 출석 7회 미만"
+)
+async def attendance_fail(
+    interaction: discord.Interaction
+):
+
+    month = datetime.now().strftime("%Y-%m")
+
+    cur.execute(
+        """
+        SELECT user_id, COUNT(*) as cnt
+        FROM attendance_log
+        WHERE date LIKE ?
+        GROUP BY user_id
+        HAVING cnt < 7
+        ORDER BY cnt ASC
+        """,
+        (f"{month}%",)
+    )
+
+    rows = cur.fetchall()
+
+    if not rows:
+        return await interaction.response.send_message(
+            "출석 미달자가 없습니다."
+        )
+
+    msg = f"🚨 {month} 출석 7회 미만\n\n"
+
+    for uid, cnt in rows:
+        msg += f"<@{uid}> - {cnt}회\n"
+
+    await interaction.response.send_message(msg)
 # 토큰 입력   
 bot.run(os.getenv("TOKEN"))
