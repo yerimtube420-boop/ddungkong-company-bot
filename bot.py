@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from zoneinfo import ZoneInfo
+from discord.ext import tasks
 import sqlite3
 import time
 import os
@@ -532,7 +533,10 @@ async def on_ready():
 
     for cmd in synced:
         print(cmd.name)
-
+        
+    if not voice_xp.is_running():
+        voice_xp.start()
+    
     print(f"{bot.user} 로그인 완료")
 
 @bot.tree.command(name="rank", description="사내 성과 카드")
@@ -634,7 +638,36 @@ async def addxp(
     await interaction.response.send_message(
         f"{member.mention}에게 {amount}P 지급 완료"
     )
+@bot.tree.command(name="addxp", description="XP 추가")
+@app_commands.describe(
+    member="대상",
+    amount="추가할 XP"
+)
+async def addxp(
+    interaction: discord.Interaction,
+    member: discord.Member,
+    amount: int
+):
+    ...
+    await interaction.response.send_message(
+        f"{member.mention}에게 {amount}P 지급 완료"
+    )
 
+
+@tasks.loop(minutes=10)
+async def voice_xp():
+
+    for guild in bot.guilds:
+
+        for vc in guild.voice_channels:
+
+            for member in vc.members:
+
+                if member.bot:
+                    continue
+
+                add_xp(str(member.id), 5)
+                
 @bot.tree.command(name="setxp", description="XP 설정")
 @app_commands.describe(
     member="대상",
