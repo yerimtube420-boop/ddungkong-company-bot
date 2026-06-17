@@ -766,9 +766,9 @@ class InvestView(discord.ui.View):
 
             if invest_date == today:
 
-                if invest_count >= 5:
+                if invest_count >= 10:
                     return await interaction.response.send_message(
-                        "오늘 투자 가능 횟수(5회)를 모두 사용했습니다.",
+                        "오늘 투자 가능 횟수(10회)를 모두 사용했습니다.",
                         ephemeral=True
                     )
 
@@ -816,7 +816,7 @@ class InvestView(discord.ui.View):
             content=
             f"🏢 투자 결과\n\n"
             f"{msg}\n\n"
-            f"오늘 사용 : {invest_count}/5",
+            f"오늘 사용 : {invest_count}/10",
             view=None
         )
 
