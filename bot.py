@@ -158,7 +158,10 @@ async def update_role(member, level):
         member.guild.roles,
         name=target_rank
     )
-
+    print(f"level={level}")
+    print(f"target_rank={target_rank}")
+    print(f"new_role={new_role}")
+    
     if new_role:
         await member.add_roles(new_role)
 
