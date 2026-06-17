@@ -88,7 +88,7 @@ def set_xp(uid, amount):
     conn.commit()
 
 def get_level(xp):
-    return int((xp / 120) ** 0.55) if xp > 0 else 0
+    return xp // 100
 
 def get_rank(level):
     if level >= 80: return "부장"
