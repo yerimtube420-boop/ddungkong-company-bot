@@ -750,6 +750,12 @@ class InvestView(discord.ui.View):
         interaction: discord.Interaction,
         location_name: str
     ):
+        if str(interaction.user.id) != self.uid:
+            return await interaction.response.send_message(
+                "본인의 투자만 선택할 수 있습니다.",
+                ephemeral=True
+            )
+            
         today = datetime.now(
             ZoneInfo("Asia/Seoul")
         ).strftime("%Y-%m-%d")
