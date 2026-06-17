@@ -638,16 +638,7 @@ async def addxp(
     await interaction.response.send_message(
         f"{member.mention}에게 {amount}P 지급 완료"
     )
-@bot.tree.command(name="addxp", description="XP 추가")
-@app_commands.describe(
-    member="대상",
-    amount="추가할 XP"
-)
-async def addxp(
-    interaction: discord.Interaction,
-    member: discord.Member,
-    amount: int
-):
+
     ...
     await interaction.response.send_message(
         f"{member.mention}에게 {amount}P 지급 완료"
