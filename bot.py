@@ -922,6 +922,101 @@ async def invest(
         view=InvestView(bet, uid)
     )
 
+class DiceBattleView(discord.ui.View):
+    def __init__(self, owner, bet):
+        super().__init__(timeout=60)
+        self.owner = owner
+        self.bet = bet
+        self.finished = False
+
+    async def on_timeout(self):
+        if not self.finished:
+            for item in self.children:
+                item.disabled = True
+
+    @discord.ui.button(
+        label="🎲 참가하기",
+        style=discord.ButtonStyle.success
+    )
+    async def join(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button
+    ):
+
+        if self.finished:
+            return
+
+        if interaction.user.id == self.owner.id:
+            return await interaction.response.send_message(
+                "자기 자신의 대결에는 참가할 수 없습니다.",
+                ephemeral=True
+            )
+
+        owner_id = str(self.owner.id)
+        challenger_id = str(interaction.user.id)
+
+        owner_xp = get_xp(owner_id)
+        challenger_xp = get_xp(challenger_id)
+
+        if challenger_xp < self.bet:
+            return await interaction.response.send_message(
+                "포인트가 부족합니다.",
+                ephemeral=True
+            )
+
+        if owner_xp < self.bet:
+            return await interaction.response.send_message(
+                "도전자의 포인트가 부족하여 대결이 취소되었습니다.",
+                ephemeral=True
+            )
+
+        self.finished = True
+
+        my_roll = random.randint(1, 6) + random.randint(1, 6)
+        enemy_roll = random.randint(1, 6) + random.randint(1, 6)
+
+        while my_roll == enemy_roll:
+            my_roll = random.randint(1, 6) + random.randint(1, 6)
+            enemy_roll = random.randint(1, 6) + random.randint(1, 6)
+
+        if my_roll > enemy_roll:
+
+            add_xp(owner_id, self.bet)
+            add_xp(challenger_id, -self.bet)
+
+            winner = self.owner
+            loser = interaction.user
+
+        else:
+
+            add_xp(owner_id, -self.bet)
+            add_xp(challenger_id, self.bet)
+
+            winner = interaction.user
+            loser = self.owner
+
+        await update_role(
+            winner,
+            get_level(get_xp(str(winner.id)))
+        )
+
+        await update_role(
+            loser,
+            get_level(get_xp(str(loser.id)))
+        )
+
+        await interaction.response.edit_message(
+            content=(
+                f"🎲 **주사위 대결 결과**\n\n"
+                f"👤 {self.owner.mention} : 🎲 {my_roll}\n"
+                f"👤 {interaction.user.mention} : 🎲 {enemy_roll}\n\n"
+                f"🏆 승자 : {winner.mention}\n"
+                f"💰 {self.bet}P 획득!"
+            ),
+            view=None
+        )
+
 @bot.tree.command(
     name="출근",
     description="오늘의 출근"
