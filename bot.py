@@ -639,7 +639,7 @@ async def addxp(
         f"{member.mention}에게 {amount}P 지급 완료"
     )
 
-    ...
+    
     await interaction.response.send_message(
         f"{member.mention}에게 {amount}P 지급 완료"
     )
@@ -922,17 +922,81 @@ async def invest(
         view=InvestView(bet, uid)
     )
 
-class DiceBattleView(discord.ui.View):
-    def __init__(self, owner, bet):
-        super().__init__(timeout=60)
-        self.owner = owner
-        self.bet = bet
-        self.finished = False
+class DiceView(discord.ui.View):
 
-    async def on_timeout(self):
-        if not self.finished:
-            for item in self.children:
-                item.disabled = True
+    def __init__(self, bet, uid):
+        super().__init__(timeout=60)
+
+        self.bet = bet
+        self.uid = uid
+
+    async def process_result(
+        self,
+        interaction: discord.Interaction
+    ):
+
+        if str(interaction.user.id) == self.uid:
+            return await interaction.response.send_message(
+                "본인은 참가할 수 없습니다.",
+                ephemeral=True
+            )
+
+        my_xp = get_xp(self.uid)
+        enemy_xp = get_xp(str(interaction.user.id))
+
+        if enemy_xp < self.bet:
+            return await interaction.response.send_message(
+                "포인트가 부족합니다.",
+                ephemeral=True
+            )
+
+        if my_xp < self.bet:
+            return await interaction.response.send_message(
+                "도전자의 포인트가 부족합니다.",
+                ephemeral=True
+            )
+
+        a = random.randint(1,6)+random.randint(1,6)
+        b = random.randint(1,6)+random.randint(1,6)
+
+        while a == b:
+            a = random.randint(1,6)+random.randint(1,6)
+            b = random.randint(1,6)+random.randint(1,6)
+
+        if a>b:
+
+            set_xp(self.uid,my_xp+self.bet)
+            set_xp(str(interaction.user.id),enemy_xp-self.bet)
+
+            result=f"""
+🎲 주사위 결과
+
+<@{self.uid}> : {a}
+{interaction.user.mention} : {b}
+
+🏆 <@{self.uid}> 승리
++{self.bet}P
+"""
+
+        else:
+
+            set_xp(self.uid,my_xp-self.bet)
+            set_xp(str(interaction.user.id),enemy_xp+self.bet)
+
+            result=f"""
+🎲 주사위 결과
+
+<@{self.uid}> : {a}
+{interaction.user.mention} : {b}
+
+🏆 {interaction.user.mention} 승리
++{self.bet}P
+"""
+
+        await interaction.response.edit_message(
+            content=result,
+            view=None
+        )
 
     @discord.ui.button(
         label="🎲 참가하기",
@@ -943,116 +1007,50 @@ class DiceBattleView(discord.ui.View):
         interaction: discord.Interaction,
         button: discord.ui.Button
     ):
-        print(type(interaction))
-        print(type(button))
-        
-        if self.finished:
-            return
-
-        if interaction.user.id == self.owner.id:
-            return await interaction.response.send_message(
-                "자기 자신의 대결에는 참가할 수 없습니다.",
-                ephemeral=True
-            )
-
-        owner_id = str(self.owner.id)
-        challenger_id = str(interaction.user.id)
-
-        owner_xp = get_xp(owner_id)
-        challenger_xp = get_xp(challenger_id)
-
-        if challenger_xp < self.bet:
-            return await interaction.response.send_message(
-                "포인트가 부족합니다.",
-                ephemeral=True
-            )
-
-        if owner_xp < self.bet:
-            return await interaction.response.send_message(
-                "도전자의 포인트가 부족하여 대결이 취소되었습니다.",
-                ephemeral=True
-            )
-
-        self.finished = True
-
-        my_roll = random.randint(1, 6) + random.randint(1, 6)
-        enemy_roll = random.randint(1, 6) + random.randint(1, 6)
-
-        while my_roll == enemy_roll:
-            my_roll = random.randint(1, 6) + random.randint(1, 6)
-            enemy_roll = random.randint(1, 6) + random.randint(1, 6)
-
-        if my_roll > enemy_roll:
-
-            add_xp(owner_id, self.bet)
-            add_xp(challenger_id, -self.bet)
-
-            winner = self.owner
-            loser = interaction.user
-
-        else:
-
-            add_xp(owner_id, -self.bet)
-            add_xp(challenger_id, self.bet)
-
-            winner = interaction.user
-            loser = self.owner
-
-        await interaction.response.edit_message(
-            content=(
-                f"🎲 **주사위 대결 결과**\n\n"
-                f"👤 {self.owner.mention} : 🎲 {my_roll}\n"
-                f"👤 {interaction.user.mention} : 🎲 {enemy_roll}\n\n"
-                f"🏆 승자 : {winner.mention}\n"
-                f"💰 {self.bet}P 획득!"
-            ),
-            view=None
-        )
+        await self.process_result(interaction)
 
 @bot.tree.command(
     name="주사위",
-    description="포인트를 걸고 주사위 대결을 모집합니다."
-)
-@app_commands.describe(
-    bet="걸 포인트 (최대 100P)"
+    description="주사위 대결"
 )
 async def dice(
     interaction: discord.Interaction,
-    bet: int
+    bet:int
 ):
 
-    uid = str(interaction.user.id)
+    uid=str(interaction.user.id)
 
-    if bet <= 0:
+    if bet<1:
         return await interaction.response.send_message(
-            "1P 이상부터 가능합니다.",
+            "1P 이상 가능합니다.",
             ephemeral=True
         )
 
-    if bet > 100:
+    if bet>100:
         return await interaction.response.send_message(
-            "최대 베팅은 100P입니다.",
+            "최대 100P입니다.",
             ephemeral=True
         )
 
-    xp = get_xp(uid)
+    xp=get_xp(uid)
 
-    if xp < bet:
+    if xp<bet:
         return await interaction.response.send_message(
             "포인트가 부족합니다.",
             ephemeral=True
         )
 
     await interaction.response.send_message(
-        content=(
-            f"🎲 **주사위 대결 모집**\n\n"
-            f"👤 도전자 : {interaction.user.mention}\n"
-            f"💰 베팅 : **{bet}P**\n\n"
-            f"아무나 아래 버튼을 눌러 도전하세요!"
-        ),
-        view=DiceBattleView(
-            interaction.user,
-            bet
+        f"""🎲 주사위 대결
+
+도전자 : {interaction.user.mention}
+
+베팅 : {bet}P
+
+아래 버튼을 먼저 누른 사람이 대결합니다.""",
+        view=DiceView(
+            bet,
+            uid
         )
     )
 
