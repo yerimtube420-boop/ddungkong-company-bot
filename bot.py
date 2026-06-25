@@ -996,16 +996,6 @@ class DiceBattleView(discord.ui.View):
             winner = interaction.user
             loser = self.owner
 
-        await update_role(
-            winner,
-            get_level(get_xp(str(winner.id)))
-        )
-
-        await update_role(
-            loser,
-            get_level(get_xp(str(loser.id)))
-        )
-
         await interaction.response.edit_message(
             content=(
                 f"🎲 **주사위 대결 결과**\n\n"
