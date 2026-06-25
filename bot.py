@@ -940,10 +940,11 @@ class DiceBattleView(discord.ui.View):
     )
     async def join(
         self,
-        button: discord.ui.Button,
-        interaction: discord.Interaction
+        interaction: discord.Interaction,
+        button: discord.ui.Button
     ):
-        print("join 실행")
+        print(type(interaction))
+        print(type(button))
         
         if self.finished:
             return
