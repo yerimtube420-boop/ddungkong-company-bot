@@ -943,7 +943,8 @@ class DiceBattleView(discord.ui.View):
         interaction: discord.Interaction,
         button: discord.ui.Button
     ):
-
+        print("join 실행")
+        
         if self.finished:
             return
 
