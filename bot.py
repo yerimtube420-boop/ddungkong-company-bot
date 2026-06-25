@@ -1018,6 +1018,53 @@ class DiceBattleView(discord.ui.View):
         )
 
 @bot.tree.command(
+    name="주사위",
+    description="포인트를 걸고 주사위 대결을 모집합니다."
+)
+@app_commands.describe(
+    bet="걸 포인트 (최대 100P)"
+)
+async def dice(
+    interaction: discord.Interaction,
+    bet: int
+):
+
+    uid = str(interaction.user.id)
+
+    if bet <= 0:
+        return await interaction.response.send_message(
+            "1P 이상부터 가능합니다.",
+            ephemeral=True
+        )
+
+    if bet > 100:
+        return await interaction.response.send_message(
+            "최대 베팅은 100P입니다.",
+            ephemeral=True
+        )
+
+    xp = get_xp(uid)
+
+    if xp < bet:
+        return await interaction.response.send_message(
+            "포인트가 부족합니다.",
+            ephemeral=True
+        )
+
+    await interaction.response.send_message(
+        content=(
+            f"🎲 **주사위 대결 모집**\n\n"
+            f"👤 도전자 : {interaction.user.mention}\n"
+            f"💰 베팅 : **{bet}P**\n\n"
+            f"아무나 아래 버튼을 눌러 도전하세요!"
+        ),
+        view=DiceBattleView(
+            interaction.user,
+            bet
+        )
+    )
+
+@bot.tree.command(
     name="출근",
     description="오늘의 출근"
 )
