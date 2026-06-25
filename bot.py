@@ -15,6 +15,7 @@ import io
 import qrcode
 import requests
 import random
+import asyncio
 
 from PIL import Image
 from PIL import ImageDraw
@@ -955,7 +956,27 @@ class DiceView(discord.ui.View):
                 "도전자의 포인트가 부족합니다.",
                 ephemeral=True
             )
+        await interaction.response.edit_message(
+            content="🎲 주사위를 굴리는 중..."
+        )
 
+        await asyncio.sleep(0.5)
+
+        await interaction.edit_original_response(
+            content="🎲 ."
+        )
+
+        await asyncio.sleep(0.5)
+
+        await interaction.edit_original_response(
+            content="🎲 .."
+        )
+
+        await asyncio.sleep(0.5)
+
+        await interaction.edit_original_response(
+            content="🎲 ..."
+        )
         a = random.randint(1,6)+random.randint(1,6)
         b = random.randint(1,6)+random.randint(1,6)
 
@@ -993,7 +1014,7 @@ class DiceView(discord.ui.View):
 +{self.bet}P
 """
 
-        await interaction.response.edit_message(
+        await interaction.edit_original_response(
             content=result,
             view=None
         )
