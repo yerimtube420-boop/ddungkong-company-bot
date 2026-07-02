@@ -547,7 +547,7 @@ async def rank(
     member: discord.Member = None
 ):
     if member is None:
-    member = interaction.user
+        member = interaction.user
     
     uid = str(member.id)
     user = member
