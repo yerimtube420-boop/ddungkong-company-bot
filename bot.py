@@ -541,10 +541,16 @@ async def on_ready():
     print(f"{bot.user} 로그인 완료")
 
 @bot.tree.command(name="rank", description="사내 성과 카드")
-async def rank(interaction: discord.Interaction):
-
-    uid = str(interaction.user.id)
-    user = interaction.user
+@app_commands.describe(member="조회할 직원")
+async def rank(
+    interaction: discord.Interaction,
+    member: discord.Member = None
+):
+    if member is None:
+    member = interaction.user
+    
+    uid = str(member.id)
+    user = member
     xp = get_xp(uid)
     level = get_level(xp)
     if user == interaction.guild.owner:
@@ -588,7 +594,7 @@ async def rank(interaction: discord.Interaction):
     )
 
     card = create_employee_card(
-        interaction.user,
+        member,
         xp,
         level,
         rank_name,
